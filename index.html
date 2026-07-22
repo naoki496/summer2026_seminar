@@ -2,30 +2,61 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#071019">
-  <title>古典助動詞 徹底演習</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#8fdcf0">
+  <meta name="description" content="50期 夏期講習(基礎) 事前課題B。古典文法の四択演習です。">
+  <title>50期 夏期講習(基礎) 事前課題B</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <div id="startScreen" class="start-screen" aria-label="スタート画面">
     <main class="start-panel">
-      <div class="eyebrow">CLASSICAL JAPANESE GRAMMAR</div>
-      <h1>古典助動詞<br><span>徹底演習</span></h1>
-      <p class="lead">全75題の四択問題。回答後すぐに正解と解説を確認できます。</p>
+      <section class="title-hero" aria-labelledby="courseTitle">
+        <div class="summer-emblem" aria-hidden="true">
+          <span class="sun-disc"></span>
+          <span class="wave wave-one"></span>
+          <span class="wave wave-two"></span>
+          <span class="emblem-letter">B</span>
+        </div>
+        <div class="title-copy">
+          <div class="title-kicker">
+            <span class="cohort-badge">50期</span>
+            <span>SUMMER STUDY 2026</span>
+          </div>
+          <h1 id="courseTitle" aria-label="50期 夏期講習(基礎) 事前課題B">
+            <span class="course-line">夏期講習<span class="course-level">(基礎)</span></span>
+            <span class="assignment-line">事前課題B</span>
+          </h1>
+          <p class="course-subtitle">古典文法 総合演習</p>
+        </div>
+      </section>
+
+      <div class="scope-row" aria-label="収録分野">
+        <span>助動詞</span><span>助詞・識別</span><span>敬語</span>
+      </div>
+      <p class="lead">全<span id="questionTotal">---</span>題の四択演習。回答後すぐに正解と解説を確認できます。</p>
 
       <div class="mode-grid">
         <button id="randomModeBtn" class="mode-card primary" type="button">
-          <span class="mode-title">ランダム10問</span>
-          <span class="mode-sub">短時間で要点確認</span>
+          <span class="mode-icon" aria-hidden="true">15</span>
+          <span class="mode-copy">
+            <span id="randomModeTitle" class="mode-title">ランダム15問</span>
+            <span class="mode-sub">短時間で全分野を確認</span>
+          </span>
         </button>
         <button id="allModeBtn" class="mode-card primary" type="button">
-          <span class="mode-title">全75問演習</span>
-          <span class="mode-sub">第1問から順番に挑戦</span>
+          <span class="mode-icon waves-icon" aria-hidden="true">ALL</span>
+          <span class="mode-copy">
+            <span id="allModeTitle" class="mode-title">全問演習</span>
+            <span class="mode-sub">第1問から順番に挑戦</span>
+          </span>
         </button>
         <a class="mode-card exit" href="https://naoki496.github.io/kokugo-dojo/">
-          <span class="mode-title">TOPへ戻る</span>
-          <span class="mode-sub">国語道場ポータル</span>
+          <span class="mode-icon exit-icon" aria-hidden="true">↩</span>
+          <span class="mode-copy">
+            <span class="mode-title">TOPへ戻る</span>
+            <span class="mode-sub">国語道場ポータル</span>
+          </span>
         </a>
       </div>
 
@@ -35,16 +66,16 @@
 
   <main id="app" class="app" hidden>
     <header class="topbar">
-      <div>
-        <div class="eyebrow">古典助動詞 徹底演習</div>
-        <div id="modeLabel" class="mode-label">ランダム10問</div>
+      <div class="app-title-block">
+        <div class="eyebrow">50期 夏期講習(基礎) 事前課題B</div>
+        <div id="modeLabel" class="mode-label">ランダム15問</div>
       </div>
-      <button id="bgmToggle" class="mini-btn" type="button">BGM: ON</button>
+      <button id="bgmToggle" class="mini-btn active" type="button">BGM: ON</button>
     </header>
 
     <section id="quizPanel" class="quiz-panel" aria-live="polite">
       <div class="meta-row">
-        <span id="progress">第1問 / 10</span>
+        <span id="progress">第1問 / 15</span>
         <span id="score">正解 0</span>
       </div>
       <div class="progress-track" aria-hidden="true"><div id="progressBar" class="progress-bar"></div></div>
@@ -57,8 +88,13 @@
 
       <div class="question-head">
         <span id="originalQuestionNo" class="question-no">教材 第1問</span>
+        <span id="categoryBadge" class="category-badge">助動詞</span>
       </div>
       <blockquote id="source" class="source" hidden></blockquote>
+      <div id="targetBox" class="target-box" hidden>
+        <span class="target-label">対象箇所</span>
+        <strong id="targetText"></strong>
+      </div>
       <div id="question" class="question">問題を読み込んでいます。</div>
 
       <div id="choices" class="choices" aria-label="選択肢">
@@ -83,14 +119,15 @@
   </main>
 
   <div id="countdownOverlay" class="countdown-overlay" hidden>
+    <div class="countdown-sun" aria-hidden="true"></div>
     <div id="countdownNumber" class="countdown-number">3</div>
   </div>
 
   <div id="resultOverlay" class="result-overlay" hidden>
     <section class="result-card" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
-      <div class="eyebrow">RESULT</div>
+      <div class="eyebrow">RESULT / SUMMER STUDY</div>
       <h2 id="resultTitle">演習結果</h2>
-      <div class="result-score"><strong id="resultScore">0 / 10</strong><span id="resultRate">正答率 0%</span></div>
+      <div class="result-score"><strong id="resultScore">0 / 15</strong><span id="resultRate">正答率 0%</span></div>
       <p id="resultMessage" class="result-message"></p>
 
       <div id="reviewArea" class="review-area"></div>

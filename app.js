@@ -2,7 +2,7 @@
 
 const QUESTION_TIME_SEC = 30;
 const WARN_AT_SEC = 5;
-const RANDOM_QUESTION_COUNT = 10;
+const RANDOM_QUESTION_COUNT = 15;
 const MARKS = ["①", "②", "③", "④"];
 
 const AUDIO_FILES = {
@@ -31,6 +31,9 @@ const app = $("#app");
 const quizPanel = $("#quizPanel");
 const randomModeBtn = $("#randomModeBtn");
 const allModeBtn = $("#allModeBtn");
+const questionTotal = $("#questionTotal");
+const randomModeTitle = $("#randomModeTitle");
+const allModeTitle = $("#allModeTitle");
 const modeLabel = $("#modeLabel");
 const progress = $("#progress");
 const scoreEl = $("#score");
@@ -39,7 +42,10 @@ const timerTrack = $("#timerTrack");
 const timerBar = $("#timerBar");
 const timerText = $("#timerText");
 const originalQuestionNo = $("#originalQuestionNo");
+const categoryBadge = $("#categoryBadge");
 const sourceEl = $("#source");
+const targetBox = $("#targetBox");
+const targetText = $("#targetText");
 const questionEl = $("#question");
 const choiceButtons = $$(".choice");
 const feedback = $("#feedback");
@@ -89,18 +95,31 @@ const playCorrect = makeAudioPool(AUDIO_FILES.correct, 4, 0.9);
 const playWrong = makeAudioPool(AUDIO_FILES.wrong, 4, 0.9);
 const playGo = makeAudioPool(AUDIO_FILES.go, 2, 0.95);
 
+function categoryForId(id) {
+  if (id <= 75) return "助動詞";
+  if (id <= 150) return "助詞・識別";
+  return "敬語";
+}
+
 function normalizeRow(row) {
+  const id = Number(String(row.id).replace(/[^0-9]/g, ""));
   const answer = Number(String(row.answer).replace(/[^1-4]/g, ""));
-  if (![1, 2, 3, 4].includes(answer)) throw new Error(`第${row.id}問の正解番号が不正です。`);
-  const choices = [row.choice1, row.choice2, row.choice3, row.choice4].map(v => String(v ?? "").trim());
-  if (choices.some(v => !v)) throw new Error(`第${row.id}問の選択肢が不足しています。`);
+  if (!Number.isInteger(id) || id < 1) throw new Error(`問題番号が不正です: ${row.id}`);
+  if (![1, 2, 3, 4].includes(answer)) throw new Error(`第${id}問の正解番号が不正です。`);
+  const choices = [row.choice1, row.choice2, row.choice3, row.choice4].map(value => String(value ?? "").trim());
+  if (choices.some(value => !value)) throw new Error(`第${id}問の選択肢が不足しています。`);
+  const question = String(row.question ?? "").trim();
+  const explanation = String(row.explanation ?? "").trim();
+  if (!question || !explanation) throw new Error(`第${id}問の設問または解説が空です。`);
   return {
-    id: Number(row.id),
+    id,
+    category: String(row.category ?? "").trim() || categoryForId(id),
     source: String(row.source ?? "").trim(),
-    question: String(row.question ?? "").trim(),
+    target: String(row.target ?? "").trim(),
+    question,
     choices,
     answer,
-    explanation: String(row.explanation ?? "").trim(),
+    explanation,
   };
 }
 
@@ -183,12 +202,14 @@ function renderQuestion() {
   locked = false;
   feedback.hidden = true;
   nextBtn.disabled = true;
+  nextBtn.textContent = "次の問題へ";
   resetChoiceStyles();
 
   progress.textContent = `第${currentIndex + 1}問 / ${order.length}`;
   scoreEl.textContent = `正解 ${score}`;
   progressBar.style.width = `${((currentIndex + 1) / order.length) * 100}%`;
   originalQuestionNo.textContent = `教材 第${q.id}問`;
+  categoryBadge.textContent = q.category;
 
   if (q.source) {
     sourceEl.hidden = false;
@@ -197,8 +218,16 @@ function renderQuestion() {
     sourceEl.hidden = true;
     sourceEl.textContent = "";
   }
-  questionEl.textContent = q.question;
 
+  if (q.target) {
+    targetBox.hidden = false;
+    targetText.textContent = q.target;
+  } else {
+    targetBox.hidden = true;
+    targetText.textContent = "";
+  }
+
+  questionEl.textContent = q.question;
   choiceButtons.forEach((button, index) => {
     button.querySelector(".choice-text").textContent = q.choices[index];
   });
@@ -255,9 +284,9 @@ function handleTimeUp() {
 
 function getResultMessage(rate) {
   if (rate >= 90) return "非常によく定着しています。この精度を維持しましょう。";
-  if (rate >= 75) return "概ね良好です。誤答した助動詞だけをもう一度確認しましょう。";
-  if (rate >= 50) return "基本事項はつかめています。接続と意味の識別を重点的に復習しましょう。";
-  return "まずは接続規則と活用表から整理すると、正答率が大きく伸びます。";
+  if (rate >= 75) return "概ね良好です。誤答した文法事項だけをもう一度確認しましょう。";
+  if (rate >= 50) return "基本事項はつかめています。接続・識別・敬意の方向を重点的に復習しましょう。";
+  return "助動詞・助詞・敬語の基礎事項を分野ごとに整理すると、正答率が大きく伸びます。";
 }
 
 function createReviewItem(item) {
@@ -265,7 +294,7 @@ function createReviewItem(item) {
   article.className = "review-item";
 
   const heading = document.createElement("h3");
-  heading.textContent = `教材 第${item.q.id}問`;
+  heading.textContent = `教材 第${item.q.id}問｜${item.q.category}`;
   article.appendChild(heading);
 
   if (item.q.source) {
@@ -273,6 +302,13 @@ function createReviewItem(item) {
     source.className = "review-source";
     source.textContent = item.q.source;
     article.appendChild(source);
+  }
+
+  if (item.q.target) {
+    const target = document.createElement("p");
+    target.className = "review-target";
+    target.textContent = `対象箇所：${item.q.target}`;
+    article.appendChild(target);
   }
 
   const question = document.createElement("p");
@@ -324,6 +360,7 @@ function showResult() {
 
   retryWrongBtn.disabled = wrongItems.length === 0;
   resultOverlay.hidden = false;
+  resultOverlay.scrollTop = 0;
 }
 
 async function startSession(mode, suppliedQuestions = null) {
@@ -341,10 +378,11 @@ async function startSession(mode, suppliedQuestions = null) {
     modeLabel.textContent = `誤答復習（${order.length}問）`;
   } else if (mode === "all") {
     order = [...questions].sort((a, b) => a.id - b.id);
-    modeLabel.textContent = "全75問演習";
+    modeLabel.textContent = `全${questions.length}問演習`;
   } else {
-    order = shuffle(questions).slice(0, Math.min(RANDOM_QUESTION_COUNT, questions.length));
-    modeLabel.textContent = "ランダム10問";
+    const count = Math.min(RANDOM_QUESTION_COUNT, questions.length);
+    order = shuffle(questions).slice(0, count);
+    modeLabel.textContent = `ランダム${count}問`;
   }
 
   await setBgm(true);
@@ -362,6 +400,7 @@ function returnHome() {
   bgmOn = true;
   bgmToggle.textContent = "BGM: ON";
   bgmToggle.classList.add("active");
+  window.scrollTo({ top: 0, behavior: "auto" });
 }
 
 choiceButtons.forEach((button, index) => {
@@ -391,11 +430,26 @@ retryWrongBtn.addEventListener("click", () => {
   if (wrongQuestions.length) startSession(currentMode, wrongQuestions);
 });
 
+function validateQuestionSequence(items) {
+  const ids = items.map(item => item.id);
+  const unique = new Set(ids);
+  if (unique.size !== ids.length) throw new Error("問題番号が重複しています。");
+  for (let i = 0; i < ids.length; i++) {
+    if (ids[i] !== i + 1) throw new Error(`問題番号が連続していません（${i + 1}の位置に第${ids[i]}問）。`);
+  }
+}
+
 async function initialize() {
   try {
     const rows = await window.CSVUtil.load("./questions.csv");
     questions = rows.map(normalizeRow).sort((a, b) => a.id - b.id);
-    if (questions.length !== 75) throw new Error(`問題数が75題ではありません（現在 ${questions.length}題）。`);
+    if (!questions.length) throw new Error("問題データが0件です。");
+    validateQuestionSequence(questions);
+
+    const randomCount = Math.min(RANDOM_QUESTION_COUNT, questions.length);
+    questionTotal.textContent = String(questions.length);
+    randomModeTitle.textContent = `ランダム${randomCount}問`;
+    allModeTitle.textContent = `全${questions.length}問演習`;
     randomModeBtn.disabled = false;
     allModeBtn.disabled = false;
   } catch (error) {
