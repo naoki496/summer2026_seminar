@@ -19,6 +19,7 @@ let score = 0;
 let history = [];
 let locked = false;
 let currentMode = "random";
+let isReviewSession = false;
 let timerId = null;
 let timerEndAt = 0;
 let bgmOn = true;
@@ -58,6 +59,12 @@ const bgmToggle = $("#bgmToggle");
 const countdownOverlay = $("#countdownOverlay");
 const countdownNumber = $("#countdownNumber");
 const resultOverlay = $("#resultOverlay");
+const resultCard = $(".result-card");
+const screenshotNotice = document.createElement("div");
+screenshotNotice.className = "screenshot-notice";
+screenshotNotice.textContent = "スクリーンショットを忘れずに！";
+screenshotNotice.hidden = true;
+resultCard.prepend(screenshotNotice);
 const resultScore = $("#resultScore");
 const resultRate = $("#resultRate");
 const resultMessage = $("#resultMessage");
@@ -340,6 +347,7 @@ function showResult() {
   const rate = total ? Math.round((score / total) * 100) : 0;
   const wrongItems = history.filter(item => !item.isCorrect);
 
+  screenshotNotice.hidden = !(currentMode === "random" && !isReviewSession);
   resultScore.textContent = `${score} / ${total}`;
   resultRate.textContent = `正答率 ${rate}%`;
   resultMessage.textContent = getResultMessage(rate);
@@ -369,6 +377,7 @@ async function startSession(mode, suppliedQuestions = null) {
   startScreen.hidden = true;
   app.hidden = false;
   currentMode = mode;
+  isReviewSession = Array.isArray(suppliedQuestions);
   currentIndex = 0;
   score = 0;
   history = [];
