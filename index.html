@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#071019">
+  <title>古典助動詞 徹底演習</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div id="startScreen" class="start-screen" aria-label="スタート画面">
+    <main class="start-panel">
+      <div class="eyebrow">CLASSICAL JAPANESE GRAMMAR</div>
+      <h1>古典助動詞<br><span>徹底演習</span></h1>
+      <p class="lead">全75題の四択問題。回答後すぐに正解と解説を確認できます。</p>
+
+      <div class="mode-grid">
+        <button id="randomModeBtn" class="mode-card primary" type="button">
+          <span class="mode-title">ランダム10問</span>
+          <span class="mode-sub">短時間で要点確認</span>
+        </button>
+        <button id="allModeBtn" class="mode-card primary" type="button">
+          <span class="mode-title">全75問演習</span>
+          <span class="mode-sub">第1問から順番に挑戦</span>
+        </button>
+        <a class="mode-card exit" href="https://naoki496.github.io/kokugo-dojo/">
+          <span class="mode-title">TOPへ戻る</span>
+          <span class="mode-sub">国語道場ポータル</span>
+        </a>
+      </div>
+
+      <p class="start-note">制限時間は1問30秒です。開始後はBGMが流れます。</p>
+    </main>
+  </div>
+
+  <main id="app" class="app" hidden>
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">古典助動詞 徹底演習</div>
+        <div id="modeLabel" class="mode-label">ランダム10問</div>
+      </div>
+      <button id="bgmToggle" class="mini-btn" type="button">BGM: ON</button>
+    </header>
+
+    <section id="quizPanel" class="quiz-panel" aria-live="polite">
+      <div class="meta-row">
+        <span id="progress">第1問 / 10</span>
+        <span id="score">正解 0</span>
+      </div>
+      <div class="progress-track" aria-hidden="true"><div id="progressBar" class="progress-bar"></div></div>
+
+      <div class="timer-head">
+        <span>TIME</span>
+        <span id="timerText">30.0s</span>
+      </div>
+      <div id="timerTrack" class="timer-track" aria-hidden="true"><div id="timerBar" class="timer-bar"></div></div>
+
+      <div class="question-head">
+        <span id="originalQuestionNo" class="question-no">教材 第1問</span>
+      </div>
+      <blockquote id="source" class="source" hidden></blockquote>
+      <div id="question" class="question">問題を読み込んでいます。</div>
+
+      <div id="choices" class="choices" aria-label="選択肢">
+        <button class="choice" type="button" data-index="0"><span class="choice-mark">①</span><span class="choice-text"></span></button>
+        <button class="choice" type="button" data-index="1"><span class="choice-mark">②</span><span class="choice-text"></span></button>
+        <button class="choice" type="button" data-index="2"><span class="choice-mark">③</span><span class="choice-text"></span></button>
+        <button class="choice" type="button" data-index="3"><span class="choice-mark">④</span><span class="choice-text"></span></button>
+      </div>
+
+      <section id="feedback" class="feedback" hidden>
+        <div id="feedbackTitle" class="feedback-title"></div>
+        <div id="correctAnswer" class="correct-answer"></div>
+        <div class="explanation-label">解説</div>
+        <p id="explanation" class="explanation"></p>
+      </section>
+
+      <div class="controls">
+        <button id="nextBtn" class="control primary" type="button" disabled>次の問題へ</button>
+        <button id="restartBtn" class="control" type="button">スタート画面へ</button>
+      </div>
+    </section>
+  </main>
+
+  <div id="countdownOverlay" class="countdown-overlay" hidden>
+    <div id="countdownNumber" class="countdown-number">3</div>
+  </div>
+
+  <div id="resultOverlay" class="result-overlay" hidden>
+    <section class="result-card" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+      <div class="eyebrow">RESULT</div>
+      <h2 id="resultTitle">演習結果</h2>
+      <div class="result-score"><strong id="resultScore">0 / 10</strong><span id="resultRate">正答率 0%</span></div>
+      <p id="resultMessage" class="result-message"></p>
+
+      <div id="reviewArea" class="review-area"></div>
+
+      <div class="result-actions">
+        <button id="retryWrongBtn" class="control primary" type="button">誤答のみ再挑戦</button>
+        <button id="retryModeBtn" class="control" type="button">同じモードでもう一度</button>
+        <button id="resultHomeBtn" class="control" type="button">スタート画面へ</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="./csv.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
