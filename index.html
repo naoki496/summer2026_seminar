@@ -8,7 +8,7 @@
   <title>古典文法確認｜助動詞・助詞・敬語</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body>
+<body class="app-autumn-ready">
   <div id="startScreen" class="start-screen" aria-label="スタート画面">
     <main class="start-panel">
       <section class="title-hero" aria-labelledby="courseTitle">
@@ -68,7 +68,7 @@
   <main id="app" class="app" hidden>
     <header class="topbar">
       <div class="app-title-block">
-        <div class="eyebrow">古典文法確認　助動詞・助詞・敬語</div>
+        <div class="eyebrow">AUTUMN DRILL / 古典文法確認</div>
         <div id="modeLabel" class="mode-label">ランダム15問</div>
       </div>
       <button id="bgmToggle" class="mini-btn active" type="button">BGM: ON</button>
@@ -120,13 +120,24 @@
   </main>
 
   <div id="countdownOverlay" class="countdown-overlay" hidden>
-    <div class="countdown-sun" aria-hidden="true"></div>
+    <div class="countdown-orb" aria-hidden="true"></div>
+    <div class="countdown-leaves" aria-hidden="true">
+      <span class="cd-leaf cd-leaf-one"></span>
+      <span class="cd-leaf cd-leaf-two"></span>
+      <span class="cd-leaf cd-leaf-three"></span>
+      <span class="cd-leaf cd-leaf-four"></span>
+    </div>
     <div id="countdownNumber" class="countdown-number">3</div>
   </div>
 
   <div id="resultOverlay" class="result-overlay" hidden>
     <section class="result-card" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
-      <div class="eyebrow">RESULT / CLASSICAL GRAMMAR</div>
+      <div class="result-decor" aria-hidden="true">
+        <span class="result-leaf result-leaf-one"></span>
+        <span class="result-leaf result-leaf-two"></span>
+        <span class="result-leaf result-leaf-three"></span>
+      </div>
+      <div class="eyebrow">AUTUMN RESULT / CLASSICAL GRAMMAR</div>
       <h2 id="resultTitle">演習結果</h2>
       <div class="result-score"><strong id="resultScore">0 / 15</strong><span id="resultRate">正答率 0%</span></div>
       <p id="resultMessage" class="result-message"></p>
